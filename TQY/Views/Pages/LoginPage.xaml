@@ -5,8 +5,13 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:hc="https://handyorg.github.io/handycontrol"
       mc:Ignorable="d"
+      xmlns:local="clr-namespace:TQY.Converters"
       Background="Transparent">
 
+    <Page.Resources>
+        <local:InverseBoolConverter x:Key="InverseBoolConverter"/>
+        <local:EmailValidMultiConverter x:Key="EmailValidMultiConverter"/>
+    </Page.Resources>
     <Grid>
         <!-- 登录卡片 -->
         <Border Width="500"
@@ -32,20 +37,32 @@
                            Margin="0,6,0,20"/>
 
                 <!-- 电子邮箱 -->
-                <hc:TextBox hc:InfoElement.Title="电子邮箱"
+                <hc:TextBox x:Name="EmailBox"
+                            hc:InfoElement.Title="电子邮箱"
                             hc:InfoElement.Placeholder="请输入你的电子邮箱"
-                            Margin="0,50,0,15"
+                            Margin="0,30,0,20"
                             Height="60"
-                            Style="{StaticResource TextBoxExtend}"/>
-
+                            hc:InfoElement.Necessary="True"
+                            Style="{StaticResource TextBoxExtend}">
+                    <hc:TextBox.Text>
+                        <Binding Path="Email1"
+                                     UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <hc:NoBlankTextRule />
+                                <hc:RegexRule Type="Mail" />
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </hc:TextBox.Text>
+                </hc:TextBox>
+                
                 <!-- 密码 -->
-                <hc:PasswordBox
-                             hc:TitleElement.Title="密码"
+                <hc:PasswordBox hc:TitleElement.Title="密码"
                              hc:PasswordBoxAttach.PasswordLength="0"
                              hc:InfoElement.Placeholder="请输入密码"
                              hc:PasswordBox.ShowEyeButton="True"
                              hc:PasswordBox.ShowPassword="False"
                              Height="60"
+                             hc:InfoElement.Necessary="True"
                              hc:TitleElement.TitlePlacement="Top"
                              VerticalAlignment="Center" />
 

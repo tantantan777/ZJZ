@@ -1,7 +1,10 @@
-﻿using System.Diagnostics;
+﻿using HandyControl.Controls;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using TQY.ViewModels;
+
+
 
 namespace TQY.Views.Pages
 {
@@ -49,8 +52,6 @@ namespace TQY.Views.Pages
         {
             this.NavigationService!.Navigate(new LoginPage());
         }
-
-
 
     }
 }

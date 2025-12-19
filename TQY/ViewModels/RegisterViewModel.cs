@@ -1,25 +1,19 @@
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace TQY.ViewModels
 {
-    // 注册界面的业务逻辑类
-    public class RegisterViewModel : ViewModelBase
+    public partial class RegisterViewModel : ObservableObject
     {
-        private string _email1;
-
-        public string Email1
-        {
-            get => _email1;
-            set => Set(ref _email1, value);
-        }
+        // 使用 ObservableProperty 自动生成属性和通知
+        [ObservableProperty]
+        private string email1;
 
         // 获取验证码命令
         public RelayCommand GetCodeCommand { get; }
 
         public RegisterViewModel()
         {
-            // 按钮点击逻辑
             GetCodeCommand = new RelayCommand(() =>
             {
                 // TODO: 获取验证码逻辑

@@ -54,7 +54,6 @@
                             Margin="0,30,0,20"
                             Height="60"
                             hc:InfoElement.Necessary="True"
-                            
                             Style="{StaticResource TextBoxExtend}">
                     <hc:TextBox.Text>
                         <Binding Path="Email1"
@@ -93,9 +92,27 @@
                         </Button>
                     </hc:Col>
                 </hc:Row>
+
+                <!-- 密码 -->
+                <hc:PasswordBox x:Name="PwdBox"
+                             hc:TitleElement.Title="密码"
+                             hc:InfoElement.Placeholder="请输入密码"
+                             hc:PasswordBox.ShowEyeButton="True"
+                             hc:PasswordBox.ShowPassword="False"
+                             Height="60"
+                             hc:InfoElement.Necessary="True"
+                             Margin="0,10,0,5"
+                             hc:TitleElement.TitlePlacement="Top"
+                             VerticalAlignment="Center" />
+
+                <TextBlock Text="*密码必须大于6位数。"
+                           Style="{StaticResource TextBlockDefaultThiLight}" 
+                           HorizontalAlignment="Left"/>
+
+
                 <!-- 选项 -->
                 <StackPanel Orientation="Horizontal"
-                             Margin="0,10,0,6"
+                             Margin="0,20,0,6"
                              VerticalAlignment="Center">
                     <CheckBox x:Name="AgreeCheckBox"
                               VerticalAlignment="Center"
