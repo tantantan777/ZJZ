@@ -5,8 +5,12 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:hc="https://handyorg.github.io/handycontrol"
       mc:Ignorable="d"
+      xmlns:local="clr-namespace:TQY.Converters"
       Background="Transparent">
-
+    <Page.Resources>
+        <local:InverseBoolConverter x:Key="InverseBoolConverter"/>
+        <local:EmailValidMultiConverter x:Key="EmailValidMultiConverter"/>
+    </Page.Resources>
     <Grid>
         <!-- 登录卡片 -->
         <Border Width="500"
@@ -44,18 +48,32 @@
                            Margin="0,6,0,20"/>
 
                 <!-- 电子邮箱 -->
-                <hc:TextBox hc:InfoElement.Title="电子邮箱"
+                <hc:TextBox x:Name="EmailBox"
+                            hc:InfoElement.Title="电子邮箱"
                             hc:InfoElement.Placeholder="请输入你的电子邮箱"
-                            Margin="0,30,0,15"
+                            Margin="0,30,0,20"
                             Height="60"
-                            Style="{StaticResource TextBoxExtend}"/>
+                            hc:InfoElement.Necessary="True"
+                            
+                            Style="{StaticResource TextBoxExtend}">
+                    <hc:TextBox.Text>
+                        <Binding Path="Email1"
+                                     UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <hc:NoBlankTextRule />
+                                <hc:RegexRule Type="Mail" />
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </hc:TextBox.Text>
+                </hc:TextBox>
 
                 <!-- 验证码 -->
-                <hc:Row Margin="0,10,0,14" VerticalAlignment="Center">
+                <hc:Row Margin="0,10,0,20" VerticalAlignment="Center">
                     <hc:Col Span="18">
                         <hc:TextBox hc:InfoElement.Title="验证码"
                                     Height="60"
                                     hc:InfoElement.Placeholder="请输入验证码"
+                                    hc:InfoElement.Necessary="True"
                                     Style="{StaticResource TextBoxExtend}"/>
                     </hc:Col>
 
@@ -63,7 +81,16 @@
                         <Button Content="获取验证码"
                                 Style="{StaticResource ButtonDefault}" 
                                 Height="40"
-                                VerticalAlignment="Bottom" Width="90" HorizontalAlignment="Right" />
+                                VerticalAlignment="Bottom"
+                                Width="90"
+                                HorizontalAlignment="Right" >
+                            <Button.IsEnabled>
+                                <MultiBinding Converter="{StaticResource EmailValidMultiConverter}">
+                                    <Binding ElementName="EmailBox" Path="Text"/>
+                                    <Binding ElementName="EmailBox" Path="(Validation.HasError)"/>
+                                </MultiBinding>
+                            </Button.IsEnabled>
+                        </Button>
                     </hc:Col>
                 </hc:Row>
                 <!-- 选项 -->

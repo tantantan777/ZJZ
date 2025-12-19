@@ -12,6 +12,7 @@ namespace TQY.Views.Pages
         {
             InitializeComponent();
         }
+        //返回登录页面
         private void OnLogin(object sender, RoutedEventArgs e)
         {
             this.NavigationService!.Navigate(new LoginPage());
