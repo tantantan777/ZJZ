@@ -1,1 +1,7 @@
-// Placeholder for IDatabaseService.cs (PQ数据库接口)
+锘縩amespace TQY.Services
+{
+    public interface IDatabaseService
+    {
+        Task<(bool IsSuccess, string Message)> RegisterAsync(string email, string password);
+    }
+}

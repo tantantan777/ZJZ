@@ -12,7 +12,6 @@ namespace TQY.Views.Pages
         public ForgotPwdPage()
         {
             InitializeComponent();
-            DataContext = new RegisterViewModel();
         }
         //返回登录页面
         private void OnLogin(object sender, RoutedEventArgs e)

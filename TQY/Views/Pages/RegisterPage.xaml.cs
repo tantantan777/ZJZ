@@ -1,7 +1,9 @@
 ﻿using HandyControl.Controls;
+using Microsoft.Extensions.Configuration;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using TQY.Services;
 using TQY.ViewModels;
 
 
@@ -13,8 +15,30 @@ namespace TQY.Views.Pages
         public RegisterPage()
         {
             InitializeComponent();
-            DataContext = new RegisterViewModel();
+            // 1. 手动构建配置读取器 (为了读取 appsettings.json)
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+            IConfiguration config = builder.Build();
+
+            // 2. 实例化服务
+            var emailService = new EmailService(config);
+            var dbService = new DatabaseService();
+            var viewModel = new RegisterViewModel(emailService, dbService);
+            
+            viewModel.NavigateToLoginAction = () =>
+            {
+                // 只有在 UI 线程才能操作界面跳转
+                this.Dispatcher.Invoke(() =>
+                {
+                    this.NavigationService?.Navigate(new LoginPage());
+                });
+            };
+
+            // 4. 最后赋值给 DataContext
+            DataContext = viewModel;
         }
+        
 
         //打开服务条款
         private void OnServicePolicy(object sender, RoutedEventArgs e)
@@ -52,6 +76,7 @@ namespace TQY.Views.Pages
         {
             this.NavigationService!.Navigate(new LoginPage());
         }
+
 
     }
 }

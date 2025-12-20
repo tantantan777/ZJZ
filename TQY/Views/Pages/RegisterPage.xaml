@@ -82,7 +82,9 @@
                                 Height="40"
                                 VerticalAlignment="Bottom"
                                 Width="90"
-                                HorizontalAlignment="Right" >
+                                HorizontalAlignment="Right"
+                                Command="{Binding GetCodeCommand}">
+                                
                             <Button.IsEnabled>
                                 <MultiBinding Converter="{StaticResource EmailValidMultiConverter}">
                                     <Binding ElementName="EmailBox" Path="Text"/>
@@ -131,6 +133,8 @@
                         Margin="0,30,0,0"
                         Width="370"
                         Height="40"
+                        Command="{Binding RegisterCommand}"
+                        CommandParameter="{Binding ElementName=PwdBox}"
                         Style="{StaticResource ButtonDefault}"/>
             </StackPanel>
         </Border>

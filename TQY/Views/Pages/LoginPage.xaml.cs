@@ -9,7 +9,6 @@ namespace TQY.Views.Pages
         public LoginPage()
         {
             InitializeComponent();
-            DataContext = new RegisterViewModel();
         }
         //跳转到忘记密码页面
         private void OnForgotPassword(object sender, RoutedEventArgs e)
