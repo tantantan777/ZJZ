@@ -43,6 +43,7 @@
                          ItemsSource="{Binding DataList}" 
                          Background="Transparent"
                          BorderThickness="0"
+                         SelectedItem="{Binding SelectedMenuItem}"
                          Margin="10,20">
                     <ListBox.ItemContainerStyle>
                         <Style TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemBaseStyle}">
@@ -75,14 +76,11 @@
 
         <Grid Grid.Column="1" Background="#F5F7FA">
             <hc:TransitioningContentControl Margin="20">
-                <hc:SimplePanel>
-                    <Border Background="White" CornerRadius="10" Padding="30">
-                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                            <TextBlock Text="欢迎进入工作台" FontSize="28" FontWeight="Bold" Foreground="#333" HorizontalAlignment="Center"/>
-                            <TextBlock Text="请在左侧选择功能模块" FontSize="16" Foreground="#999" Margin="0,10,0,0" HorizontalAlignment="Center"/>
-                        </StackPanel>
-                    </Border>
-                </hc:SimplePanel>
+                <Grid Grid.Column="1" Background="#F5F7FA">
+
+                    <hc:TransitioningContentControl Content="{Binding CurrentView}" Margin="20"/>
+
+                </Grid>
             </hc:TransitioningContentControl>
         </Grid>
     </Grid>
