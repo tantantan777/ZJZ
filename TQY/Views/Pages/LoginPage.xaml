@@ -43,68 +43,84 @@
                             Margin="0,30,0,20"
                             Height="60"
                             hc:InfoElement.Necessary="True"
+                            
                             Style="{StaticResource TextBoxExtend}">
                     <hc:TextBox.Text>
-                        <Binding Path="Email1"
+                        <Binding Path="Email"
                                      UpdateSourceTrigger="PropertyChanged">
                             <Binding.ValidationRules>
                                 <hc:NoBlankTextRule />
-                                <hc:RegexRule Type="Mail" />
+                                <hc:NoBlankTextRule ErrorContent="邮箱不能为空"/>
+                                <hc:RegexRule Type="Mail" ErrorContent="邮箱格式不正确"/>
                             </Binding.ValidationRules>
                         </Binding>
                     </hc:TextBox.Text>
                 </hc:TextBox>
                 
-                <!-- 密码 -->
-                <hc:PasswordBox hc:TitleElement.Title="密码"
-                             hc:PasswordBoxAttach.PasswordLength="0"
-                             hc:InfoElement.Placeholder="请输入密码"
-                             hc:PasswordBox.ShowEyeButton="True"
-                             hc:PasswordBox.ShowPassword="False"
-                             Height="60"
-                             hc:InfoElement.Necessary="True"
-                             hc:TitleElement.TitlePlacement="Top"
-                             VerticalAlignment="Center" />
-
-                <!-- 选项 -->
-                <hc:Row Margin="0,10,0,14" VerticalAlignment="Center">
-                    <hc:Col Span="12">
-                        <CheckBox Content="记住我" 
-                                  Style="{StaticResource CheckBoxBaseStyle}"/>
+                <!-- 验证码 -->
+                <hc:Row Margin="0,10,0,20" VerticalAlignment="Center">
+                    <hc:Col Span="18">
+                        <hc:TextBox hc:InfoElement.Title="验证码"
+                                    hc:InfoElement.Placeholder="6位数字"
+                                    hc:InfoElement.Necessary="True"
+                                    Height="60"
+                                    Style="{StaticResource TextBoxExtend}"
+                                    Text="{Binding Code, UpdateSourceTrigger=PropertyChanged}"/>
                     </hc:Col>
-
-                    <hc:Col Span="12" HorizontalAlignment="Right">
-                        <Button Content="忘记密码？" 
-                                Click="OnForgotPassword"
+                    <hc:Col Span="6">
+                        <Button Content="{Binding VerifyCodeButtonText}"
+                                Command="{Binding GetCodeCommand}"
                                 Style="{StaticResource ButtonDefault}" 
-                                Foreground="{DynamicResource PrimaryBrush}" 
-                                BorderBrush="{x:Null}"/>
+                                Height="40"
+                                VerticalAlignment="Bottom"
+                                HorizontalAlignment="Right"
+                                Width="100"
+                                Margin="10,0,0,0">
+                            <Button.IsEnabled>
+                                <MultiBinding Converter="{StaticResource EmailValidMultiConverter}">
+
+                                    <Binding ElementName="EmailBox" Path="Text"/>
+
+                                    <Binding ElementName="EmailBox" Path="(Validation.HasError)"/>
+
+                                    <Binding Path="IsSendingCode"/>
+
+                                </MultiBinding>
+                            </Button.IsEnabled>
+                        </Button>
                     </hc:Col>
                 </hc:Row>
 
-                <!-- 登录按钮 -->
-                <Button Content="登 录"
-                        Margin="0,10,0,0"
-                        Width="370"
-                        Height="40"
-                        Style="{StaticResource ButtonDefault}"/>
+                <CheckBox Content="记住我" 
+                          Margin="0,0,0,10"
+                          Style="{StaticResource CheckBoxBaseStyle}"/>
 
-                <!-- 注册 -->
-                <StackPanel Orientation="Horizontal"
-                            HorizontalAlignment="Center"
-                            Margin="0,15,0,0">
 
-                    <TextBlock Text="没有账号？"
-                               Style="{StaticResource TextBlockDefault}"
-                               FontSize="12"
-                               VerticalAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" 
+                            HorizontalAlignment="Left" 
+                            Margin="0,0,0,15"
+                            VerticalAlignment="Center">
 
-                    <Button Content="点击注册"
-                            Style="{StaticResource ButtonDefault}" 
-                            Foreground="{DynamicResource PrimaryBrush}" 
-                            BorderBrush="{x:Null}"
-                            Click="OnRegister"/>
+                    <CheckBox IsChecked="{Binding IsAgreed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                              VerticalAlignment="Center"
+                              Margin="0,0,6,10"/>
+
+                    <TextBlock FontSize="12" VerticalAlignment="Center">
+                        <Run Text="我已阅读并同意"/>
+                        <Hyperlink Click="OnServicePolicy" Foreground="{DynamicResource PrimaryBrush}">《服务条款》</Hyperlink>
+                        <Run Text="和"/>
+                        <Hyperlink Click="OnPrivacyPolicy" Foreground="{DynamicResource PrimaryBrush}">《隐私政策》</Hyperlink>
+                    </TextBlock>
                 </StackPanel>
+                
+                <!-- 登录按钮 -->
+                <Button Content="登 录 / 注 册"
+                        Command="{Binding LoginCommand}"
+                        Style="{StaticResource ButtonDefault}"
+                        Width="370"
+                        Margin="0,20,0,0"
+                        Height="40"/>
+
             </StackPanel>
         </Border>
     </Grid>

@@ -1,47 +1,44 @@
 using Microsoft.EntityFrameworkCore;
 using TQY.Data;
-using TQY.Helpers; // 引用 PasswordHelper
 using TQY.Models;
 
 namespace TQY.Services
 {
     public class DatabaseService : IDatabaseService
     {
-        // 注册新用户
-        public async Task<(bool IsSuccess, string Message)> RegisterAsync(string email, string password)
+        public async Task<(bool IsSuccess, string Message, User? User)> LoginOrRegisterAsync(string email)
         {
             try
             {
-                // 使用 using 确保数据库连接用完即释放
                 using var context = new AppDbContext();
 
-                // 1. 检查邮箱是否已被注册
-                var exists = await context.Users.AnyAsync(u => u.Email == email);
-                if (exists)
+                // 1. 查找数据库里有没有这个人
+                var user = await context.Users.FirstOrDefaultAsync(u => u.Email == email);
+
+                if (user != null)
                 {
-                    return (false, "该邮箱已被注册！");
+                    // A. 老用户：直接登录
+                    return (true, "欢迎回来", user);
                 }
 
-                // 2. 创建新用户
-                var user = new User
+                // B. 新用户：自动注册
+                var newUser = new User
                 {
                     Email = email,
-                    Username = email.Split('@')[0], // 默认用户名为邮箱前缀
-                    PasswordHash = PasswordHelper.HashPassword(password), // ★ 关键：密码加密存储
+                    Username = email.Split('@')[0], // 默认用邮箱前缀当名字
                     CreatedAt = DateTime.UtcNow,
                     IsActive = true,
                     Role = "User"
                 };
 
-                // 3. 写入数据库
-                context.Users.Add(user);
+                context.Users.Add(newUser);
                 await context.SaveChangesAsync();
 
-                return (true, "注册成功");
+                return (true, "新用户注册并登录成功", newUser);
             }
             catch (Exception ex)
             {
-                return (false, $"注册发生错误: {ex.Message}");
+                return (false, $"数据库错误: {ex.Message}", null);
             }
         }
     }

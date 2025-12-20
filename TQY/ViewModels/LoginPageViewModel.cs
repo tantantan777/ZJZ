@@ -1,21 +1,107 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using TQY.Services;
+using System.Windows;
+using MessageBox = HandyControl.Controls.MessageBox;
 
 namespace TQY.ViewModels
 {
     public partial class LoginPageViewModel : ObservableObject
     {
+        private readonly EmailService _emailService;
+        private readonly IDatabaseService _dbService;
+
+        public Action? NavigateToMainPageAction { get; set; }
+
         [ObservableProperty]
-        private string email1;
+        [NotifyCanExecuteChangedFor(nameof(LoginCommand))]
+        private string _email = string.Empty;
 
-        public RelayCommand GetCodeCommand { get; }
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(LoginCommand))]
+        private string _code = string.Empty;
 
-        public LoginPageViewModel()
+        // ★ 新增：同意协议状态
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(LoginCommand))]
+        private bool _isAgreed;
+
+        [ObservableProperty]
+        private string _verifyCodeButtonText = "获取验证码";
+
+        [ObservableProperty]
+        private bool _isSendingCode = false;
+
+        public LoginPageViewModel(EmailService emailService, IDatabaseService dbService)
         {
-            GetCodeCommand = new RelayCommand(() =>
+            _emailService = emailService;
+            _dbService = dbService;
+        }
+
+        // ★ 修改：现在必须同时满足 3 个条件才能点登录
+        private bool CanLogin()
+        {
+            bool hasEmail = !string.IsNullOrWhiteSpace(Email);
+            bool hasCode = !string.IsNullOrWhiteSpace(Code);
+            return hasEmail && hasCode && IsAgreed; // 必须勾选协议
+        }
+
+        [RelayCommand]
+        private async Task GetCode()
+        {
+            if (string.IsNullOrWhiteSpace(Email)) { MessageBox.Warning("请输入邮箱！"); return; }
+
+            IsSendingCode = true;
+            VerifyCodeButtonText = "发送中...";
+
+            bool isSent = await _emailService.SendCodeAsync(Email);
+            if (isSent)
             {
-                // TODO: 获取验证码逻辑
-            });
+                MessageBox.Success("验证码已发送");
+                int s = 60;
+                while (s > 0)
+                {
+                    VerifyCodeButtonText = $"{s}s 后重试";
+                    await Task.Delay(1000);
+                    s--;
+                }
+            }
+            else
+            {
+                MessageBox.Error("发送失败");
+            }
+            VerifyCodeButtonText = "获取验证码";
+            IsSendingCode = false;
+        }
+
+        [RelayCommand(CanExecute = nameof(CanLogin))]
+        private async Task Login()
+        {
+            // 双重保险：再次检查协议
+            if (!IsAgreed)
+            {
+                MessageBox.Warning("请先同意服务条款");
+                return;
+            }
+
+            if (!_emailService.VerifyCode(Email, Code))
+            {
+                MessageBox.Error("验证码错误或已过期");
+                return;
+            }
+
+            var result = await _dbService.LoginOrRegisterAsync(Email);
+
+            if (result.IsSuccess)
+            {
+                MessageBox.Success(result.Message);
+                await Task.Delay(1000);
+                NavigateToMainPageAction?.Invoke();
+            }
+            else
+            {
+                MessageBox.Error(result.Message);
+            }
         }
     }
 }
