@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel; // 必须引用
-using System.Runtime.CompilerServices; // 必须引用
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Windows; // 引用 Windows 以使用 RoutedEventArgs
 using System.Windows.Controls;
 using HandyControl.Controls;
+using TQY.Helpers; // 引用 SessionHelper
 
 namespace TQY.Views.Pages
 {
@@ -15,7 +17,6 @@ namespace TQY.Views.Pages
 
         public List<MenuItem> DataList { get; set; }
 
-        // ★ 核心1：当前显示的页面内容
         private object _currentView;
         public object CurrentView
         {
@@ -27,7 +28,6 @@ namespace TQY.Views.Pages
             }
         }
 
-        // ★ 核心2：当前选中的菜单项
         private MenuItem _selectedMenuItem;
         public MenuItem SelectedMenuItem
         {
@@ -36,7 +36,6 @@ namespace TQY.Views.Pages
             {
                 _selectedMenuItem = value;
                 OnPropertyChanged();
-                // 当菜单选中项改变时，切换页面
                 SwitchPage(value?.Name);
             }
         }
@@ -45,7 +44,6 @@ namespace TQY.Views.Pages
         {
             InitializeComponent();
 
-            // 1. 更新菜单数据
             DataList = new List<MenuItem>
             {
                 new MenuItem { Name = "项目总览" },
@@ -57,12 +55,26 @@ namespace TQY.Views.Pages
             };
 
             DataContext = this;
-
-            // 2. 默认显示“项目总览”
             CurrentView = new ProjectOverview();
         }
 
-        // ★ 核心3：页面切换工厂逻辑
+        // ★★★ 新增：退出登录事件 ★★★
+        private void OnLogoutClick(object sender, RoutedEventArgs e)
+        {
+            // 1. 询问用户是否确认退出 (可选)
+            // if (HandyControl.Controls.MessageBox.Show("确定要退出登录吗？", "提示", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes) return;
+
+            // 2. 清除本地登录凭证
+            SessionHelper.Clear();
+
+            // 3. 打开登录窗口
+            var loginWindow = new LoginWindow();
+            loginWindow.Show();
+
+            // 4. 关闭当前 OA 窗口
+            this.Close();
+        }
+
         private void SwitchPage(string name)
         {
             if (string.IsNullOrEmpty(name)) return;
@@ -73,7 +85,6 @@ namespace TQY.Views.Pages
                     CurrentView = new ProjectOverview();
                     break;
                 case "工程概况":
-                    // CurrentView = new ProjectProfilePage(); // 以后创建了再打开注释
                     CurrentView = CreatePlaceholder("工程概况页面 - 开发中");
                     break;
                 case "工程文件":
@@ -94,7 +105,6 @@ namespace TQY.Views.Pages
             }
         }
 
-        // 临时占位符方法
         private object CreatePlaceholder(string text)
         {
             return new Border
@@ -106,14 +116,20 @@ namespace TQY.Views.Pages
                 {
                     Text = text,
                     FontSize = 24,
-                    HorizontalAlignment = System.Windows.HorizontalAlignment.Center,
-                    VerticalAlignment = System.Windows.VerticalAlignment.Center,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
                     Foreground = System.Windows.Media.Brushes.Gray
                 }
             };
         }
+        private void OnUserInfoClick(object sender, RoutedEventArgs e)
+        {
+            // 1. 取消左侧菜单的选中状态
+            SelectedMenuItem = null;
 
-        // 实现 INotifyPropertyChanged
+            // 2. 切换右侧内容
+            CurrentView = new UserInfoPage();
+        }
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string? name = null)
         {
