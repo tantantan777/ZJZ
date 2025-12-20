@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TQY.Services;
 using System.Windows;
+using TQY.Helpers;
 using MessageBox = HandyControl.Controls.MessageBox;
 
 namespace TQY.ViewModels
@@ -21,10 +22,15 @@ namespace TQY.ViewModels
         [NotifyCanExecuteChangedFor(nameof(LoginCommand))]
         private string _code = string.Empty;
 
+
         // ★ 新增：同意协议状态
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(LoginCommand))]
-        private bool _isAgreed;
+        private bool _isAgreed = true;
+
+        [ObservableProperty]
+        private bool _isRemembered = true;
+
 
         [ObservableProperty]
         private string _verifyCodeButtonText = "获取验证码";
@@ -57,7 +63,6 @@ namespace TQY.ViewModels
             bool isSent = await _emailService.SendCodeAsync(Email);
             if (isSent)
             {
-                MessageBox.Success("验证码已发送");
                 int s = 60;
                 while (s > 0)
                 {
@@ -94,9 +99,21 @@ namespace TQY.ViewModels
 
             if (result.IsSuccess)
             {
+                if (IsRemembered)
+                {
+                    SessionHelper.SaveUser(Email); // 保存邮箱到本地
+                }
+                else
+                {
+                    SessionHelper.Clear(); // 如果没勾选，确保清除旧的
+                }
+
+                // TODO: 建议把 result.User 赋值给全局变量，例如 App.CurrentUser = result.User;
+
                 MessageBox.Success(result.Message);
                 await Task.Delay(1000);
                 NavigateToMainPageAction?.Invoke();
+               
             }
             else
             {

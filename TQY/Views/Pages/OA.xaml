@@ -1,12 +1,89 @@
-﻿<Window x:Class="TQY.Views.Pages.OA"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:TQY.Views.Pages"
-        mc:Ignorable="d"
-        Title="OA" Height="450" Width="800">
+﻿<hc:Window x:Class="TQY.Views.Pages.OA"
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           xmlns:hc="https://handyorg.github.io/handycontrol"
+           mc:Ignorable="d"
+           Title="筑恒智 - OA系统" 
+           Height="800" Width="1200"
+           WindowState="Maximized" 
+           WindowStartupLocation="CenterScreen"
+           ShowTitle="True"
+           ShowNonClientArea="True"
+           Background="{DynamicResource RegionBrush}">
+
     <Grid>
-        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="240"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <hc:SimplePanel Grid.Column="0" Background="White" Effect="{StaticResource EffectShadow2}" ZIndex="1">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0" Margin="0,30,0,20">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Border Background="{DynamicResource PrimaryBrush}" Width="36" Height="36" CornerRadius="6" Margin="0,0,10,0">
+                            <TextBlock Text="智" Foreground="White" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="筑恒智 OA" FontSize="22" FontWeight="Bold" VerticalAlignment="Center" Foreground="#333"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <hc:Divider Grid.Row="1" LineStrokeThickness="1" LineStroke="#F0F0F0" Margin="20,0"/>
+
+                <ListBox Grid.Row="2" 
+                         ItemsSource="{Binding DataList}" 
+                         Background="Transparent"
+                         BorderThickness="0"
+                         Margin="10,20">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemBaseStyle}">
+                            <Setter Property="Margin" Value="0,4"/>
+                            <Setter Property="Padding" Value="12,10"/>
+                            <Setter Property="hc:BorderElement.CornerRadius" Value="8"/>
+                            <Setter Property="Cursor" Value="Hand"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Background" Value="{DynamicResource PrimaryBrush}"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="💠" Margin="0,0,12,0" FontSize="14"/>
+                                <TextBlock Text="{Binding Name}" FontSize="15" FontWeight="Medium"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <TextBlock Grid.Row="3" Text="© 2025 Zjz Corp." FontSize="12" Foreground="#CCC" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+            </Grid>
+        </hc:SimplePanel>
+
+        <Grid Grid.Column="1" Background="#F5F7FA">
+            <hc:TransitioningContentControl Margin="20">
+                <hc:SimplePanel>
+                    <Border Background="White" CornerRadius="10" Padding="30">
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <TextBlock Text="欢迎进入工作台" FontSize="28" FontWeight="Bold" Foreground="#333" HorizontalAlignment="Center"/>
+                            <TextBlock Text="请在左侧选择功能模块" FontSize="16" Foreground="#999" Margin="0,10,0,0" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                </hc:SimplePanel>
+            </hc:TransitioningContentControl>
+        </Grid>
     </Grid>
-</Window>
+</hc:Window>
